@@ -7,8 +7,10 @@ import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Date;
@@ -124,4 +126,63 @@ public class FareCalculatorServiceTest {
         assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
 
+    @Test
+    @DisplayName("Test pour vérifier si le prix d'une place prise par une voiture pendant moins de 30 minutes vaut 0")
+    public void calculateFareCarWithLessThanThrirtyMinutes(){
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (30*60*1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals((0), ticket.getPrice());
+    }
+
+    @Test
+    @DisplayName("Test pour vérifier si le prix d'une place prise par une mote pendant moins de 30 minutes vaut 0")
+    public void calculateFareBikeWithLessThanThrirtyMinutes(){
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (30*60*1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals((0), ticket.getPrice());
+    }
+
+    @Test
+    @DisplayName("Test pour vérifier si le prix d'une place prise par une voiture pendant moins de 29 minutes et 59 secondes vaut 0")
+    public void calculateFareCarWithTwentyNineMinutesAndFiftyNineSecondsParkingTime(){
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - 29*59*1000);
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals(0, ticket.getPrice());
+    }
+
+    @Test
+    @DisplayName("Test pour vérifier si le prix d'une place prise par une voiture pendant moins de 31 minutes")
+    public void calculateFareCarWithThirtyMinutesParkingTime(){
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  31 * 60 * 1000) );
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals( (0.516666667 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
+    }
 }

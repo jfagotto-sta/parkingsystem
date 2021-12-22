@@ -7,6 +7,7 @@ import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
+import com.parkit.parkingsystem.model.Ticket;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -16,6 +17,7 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,14 +67,17 @@ public class ParkingDataBaseIT {
 
     @Test
     @DisplayName("vérifier que le tarif généré et le temps de sortie sont correctement renseignés dans la base de données")
-    public void testParkingLotExit(){
-        //testParkingACar();  ! Un test de doit pas être dépendant d'un autre test !
+    public void testParkingLotExit() throws Exception {
+
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
         parkingService.processExitingVehicle();
-        ticketDAO.getTicket("ABCDEF");
-        assertThat(ticketDAO.getTicket("ABCDEF").getPrice()).isNotEqualTo(0.0);
-        assertThat(ticketDAO.getTicket("ABCDEF").getOutTime()).isEqualToIgnoringMillis(new Date());
+        ticketDAO.updateTicket(ticketDAO.getTicket("ABCDEF"));
+
+        String vehicleRegNumber = inputReaderUtil.readVehicleRegistrationNumber();
+
+        assertNotEquals(null, ticketDAO.getTicket(vehicleRegNumber).getPrice());
+        assertNotEquals(null, ticketDAO.getTicket(vehicleRegNumber).getOutTime());
 
         //TODO: check that the fare generated and out time are populated correctly in the database
     }

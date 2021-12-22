@@ -8,10 +8,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 
 public class TicketDAO {
 
@@ -71,8 +68,18 @@ public class TicketDAO {
 
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;
+        int countSameVehicleRegNumber = 0;
         try {
             con = dataBaseConfig.getConnection();
+            PreparedStatement ps1 = con.prepareStatement(DBConstants.EVERCOME_CLIENT);
+            ps1.setString(1, ticket.getVehicleRegNumber());
+            ResultSet rs = ps1.executeQuery();
+            while (rs.next()) {
+                countSameVehicleRegNumber = rs.getInt(1);
+                if (countSameVehicleRegNumber != 0)
+                    ticket.setPrice(ticket.getPrice()*0.95);
+                }
+
             PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
             ps.setDouble(1, ticket.getPrice());
             ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));

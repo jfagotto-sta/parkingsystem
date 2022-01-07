@@ -7,17 +7,13 @@ import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
-import com.parkit.parkingsystem.model.Ticket;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Date;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +23,7 @@ public class ParkingDataBaseIT {
     private static ParkingSpotDAO parkingSpotDAO;
     private static TicketDAO ticketDAO;
     private static DataBasePrepareService dataBasePrepareService;
+
 
     @Mock
     private static InputReaderUtil inputReaderUtil;
@@ -59,7 +56,7 @@ public class ParkingDataBaseIT {
         parkingService.processIncomingVehicle();
         int currentSpot = ticketDAO.getTicket("ABCDEF").getParkingSpot().getId();
         int nextSpot = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
-        assertTrue(ticketDAO.getTicket("ABCDEF").getInTime() != null);
+        assertNotNull(ticketDAO.getTicket("ABCDEF").getInTime());
         assertNotEquals(currentSpot, nextSpot);
 
         //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
@@ -71,14 +68,12 @@ public class ParkingDataBaseIT {
 
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
+        Thread.sleep(1000);
         parkingService.processExitingVehicle();
-        ticketDAO.updateTicket(ticketDAO.getTicket("ABCDEF"));
-
-        String vehicleRegNumber = inputReaderUtil.readVehicleRegistrationNumber();
-
-        assertNotEquals(null, ticketDAO.getTicket(vehicleRegNumber).getPrice());
-        assertNotEquals(null, ticketDAO.getTicket(vehicleRegNumber).getOutTime());
+        assertNotNull(ticketDAO.getTicket("ABCDEF").getOutTime());
+        assertEquals(ticketDAO.getTicket("ABCDEF").getPrice(), 0);
 
         //TODO: check that the fare generated and out time are populated correctly in the database
     }
+
 }

@@ -174,6 +174,21 @@ public class FareCalculatorServiceTest {
     }
 
     @Test
+    @DisplayName("Test pour vérifier si le prix d'une place prise par une moto pendant moins de 29 minutes et 59 secondes vaut 0")
+    public void calculateFareBikeWithTwentyNineMinutesAndFiftyNineSecondsParkingTime(){
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - 29*59*1000);
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1,ParkingType.BIKE,false);
+
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals(0, ticket.getPrice());
+    }
+
+    @Test
     @DisplayName("Test pour vérifier si le prix d'une place prise par une voiture pendant moins de 31 minutes")
     public void calculateFareCarWithThirtyMinutesParkingTime(){
         Date inTime = new Date();

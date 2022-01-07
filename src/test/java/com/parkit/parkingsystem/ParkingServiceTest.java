@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ParkingServiceTest {
-
+    @Mock
     private static ParkingService parkingService;
 
     @Mock
@@ -57,5 +57,11 @@ public class ParkingServiceTest {
         parkingService.processExitingVehicle();
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     }
+
+   @Test
+   public void processIncomingVehicleTest(){
+        parkingService.processIncomingVehicle();
+        verify()
+  }
 
 }

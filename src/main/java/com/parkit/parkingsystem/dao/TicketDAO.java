@@ -71,7 +71,18 @@ public class TicketDAO {
 
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;
+        int frequencyVehicleNumber = 0;
         try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement discount = con.prepareStatement(DBConstants.GET_RECURRENT_CLIENT);
+            discount.setString(1, ticket.getVehicleRegNumber());
+            ResultSet resultSet = discount.executeQuery();
+            while (resultSet.next()) {
+                frequencyVehicleNumber = resultSet.getInt(1);
+                if (frequencyVehicleNumber != 0)
+                    ticket.Applydiscount();
+            }
+
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
             ps.setDouble(1, ticket.getPrice());

@@ -59,7 +59,7 @@ public class Ticket {
         this.outTime = outTime;
     }
 
-    public void discount() {
+    public void Applydiscount() {
         price -= price*0.05;
         System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
     }

@@ -56,19 +56,22 @@ public class ParkingDataBaseIT {
 
     @Test
     public void testParkingACar(){
+        Ticket ticket1 = new Ticket();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
-        assertNotNull(ticket);
-        assertNotEquals(ticket.getParkingSpot(), parkingService.getNextParkingNumberIfAvailable());
+        ticketDAO.saveTicket(ticket1);
+        assertNotNull(ticket1);
+        assertNotEquals(ticket1.getParkingSpot(), parkingService.getNextParkingNumberIfAvailable());
 
         //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
     }
 
     @Test
-    public void testParkingLotExit(){
-        testParkingACar();
+    public void testParkingLotExit() throws InterruptedException {
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService.processIncomingVehicle();
+        Thread.sleep(1000);
         parkingService.processExitingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         assertNotNull(ticket.getOutTime());

@@ -10,6 +10,16 @@ public class Ticket {
     private double price;
     private Date inTime;
     private Date outTime;
+    private boolean isMember;
+
+    public Boolean getMember() {
+        return isMember;
+    }
+
+    public void setMember(Boolean member) {
+        isMember = member;
+    }
+
 
     public int getId() {
         return id;
@@ -58,6 +68,8 @@ public class Ticket {
     public void setOutTime(Date outTime) {
         this.outTime = outTime;
     }
+
+
 
     public void Applydiscount() {
         price -= price*0.05;

@@ -12,11 +12,11 @@ public class Ticket {
     private Date outTime;
     private boolean isMember;
 
-    public Boolean getMember() {
+    public boolean getMember() {
         return isMember;
     }
 
-    public void setMember(Boolean member) {
+    public void setMember(boolean member) {
         isMember = member;
     }
 

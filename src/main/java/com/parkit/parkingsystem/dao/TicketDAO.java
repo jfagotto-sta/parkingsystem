@@ -8,10 +8,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 
 public class TicketDAO {
 
@@ -24,7 +21,7 @@ public class TicketDAO {
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.SAVE_TICKET);
-            //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
+            //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME,)
             //ps.setInt(1,ticket.getId());
             ps.setInt(1,ticket.getParkingSpot().getId());
             ps.setString(2, ticket.getVehicleRegNumber());
@@ -58,7 +55,7 @@ public class TicketDAO {
                 ticket.setPrice(rs.getDouble(3));
                 ticket.setInTime(rs.getTimestamp(4));
                 ticket.setOutTime(rs.getTimestamp(5));
-                ticket.setMember(true);
+                ticket.setMember(isMember(ticket));
             }
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
@@ -72,18 +69,7 @@ public class TicketDAO {
 
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;
-        int frequencyVehicleNumber = 0;
         try {
-            con = dataBaseConfig.getConnection();
-            PreparedStatement discount = con.prepareStatement(DBConstants.GET_RECURRENT_CLIENT);
-            discount.setString(1, ticket.getVehicleRegNumber());
-            ResultSet resultSet = discount.executeQuery();
-            while (resultSet.next()) {
-                frequencyVehicleNumber = resultSet.getInt(1);
-                if (frequencyVehicleNumber != 0)
-                    ticket.Applydiscount();
-            }
-
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET);
             ps.setDouble(1, ticket.getPrice());
@@ -95,6 +81,27 @@ public class TicketDAO {
             logger.error("Error saving ticket info",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
+        }
+        return false;
+    }
+
+    public boolean isMember (Ticket ticket) {
+        Connection con = null;
+        int frequencyVehicleNumber = 0;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement discount = con.prepareStatement(DBConstants.GET_RECURRENT_CLIENT);
+            discount.setString(1, ticket.getVehicleRegNumber());
+            ResultSet resultSet = discount.executeQuery();
+            while (resultSet.next()) {
+                frequencyVehicleNumber = resultSet.getInt(1);
+                if (frequencyVehicleNumber != 0)
+                    return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return false;
     }

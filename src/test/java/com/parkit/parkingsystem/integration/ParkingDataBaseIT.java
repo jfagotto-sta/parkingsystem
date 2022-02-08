@@ -44,7 +44,6 @@ public class ParkingDataBaseIT {
 
     @BeforeEach
     private void setUpPerTest() throws Exception {
-        when(inputReaderUtil.readSelection()).thenReturn(1);
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         dataBasePrepareService.clearDataBaseEntries();
     }
@@ -56,29 +55,33 @@ public class ParkingDataBaseIT {
 
     @Test
     public void testParkingACar(){
-        Ticket ticket1 = new Ticket();
+        when(inputReaderUtil.readSelection()).thenReturn(1);
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
-        Ticket ticket = ticketDAO.getTicket("ABCDEF");
-        ticketDAO.saveTicket(ticket1);
-        assertNotNull(ticket1);
-        assertNotEquals(ticket1.getParkingSpot(), parkingService.getNextParkingNumberIfAvailable());
-
-        //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
+        assertNotNull(ticketDAO);
+        assertNotEquals(parkingSpotDAO, parkingService.getNextParkingNumberIfAvailable());
     }
 
     @Test
     public void testParkingLotExit() throws InterruptedException {
+        when(inputReaderUtil.readSelection()).thenReturn(1);
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
         Thread.sleep(1000);
         parkingService.processExitingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
+
         assertNotNull(ticket.getOutTime());
         assertEquals(ticket.getPrice(), 0);
+    }
 
-
-        //TODO: check that the fare generated and out time are populated correctly in the database
+    @Test
+    public void testParkingABike(){
+        when(inputReaderUtil.readSelection()).thenReturn(2);
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService.processIncomingVehicle();
+        assertNotNull(ticketDAO);
+        assertNotEquals(parkingSpotDAO, parkingService.getNextParkingNumberIfAvailable());
     }
 
 }

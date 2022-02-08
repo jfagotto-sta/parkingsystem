@@ -215,10 +215,26 @@ public class FareCalculatorServiceTest {
     }
 
     @Test
-    @DisplayName("Test pour vérifier le montant d'une place de parking pour un client en moto resté 29 minutes")
+    @DisplayName("Test pour vérifier le montant d'une place de parking pour un client en voiture resté 30 minutes")
+    public void calculateFareCarTwentyNineMinutes(){
+        Date intTime = new Date();
+        intTime.setTime(System.currentTimeMillis() - (30 * 60 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+
+        ticket.setInTime(intTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+
+        assertEquals(0, ticket.getPrice());
+    }
+
+    @Test
+    @DisplayName("Test pour vérifier le montant d'une place de parking pour un client en moto resté 30 minutes")
     public void calculateFareBikeTwentyNineMinutes(){
         Date intTime = new Date();
-        intTime.setTime(System.currentTimeMillis() - (29 * 60 * 1000));
+        intTime.setTime(System.currentTimeMillis() - (30 * 60 * 1000));
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 
@@ -230,5 +246,36 @@ public class FareCalculatorServiceTest {
         assertEquals(0, ticket.getPrice());
     }
 
+    @Test
+    @DisplayName("Test pour vérifier le montant d'une place de parking pour un client en voiture resté 45 secondes")
+    public void calculateFareCarFortyFiveSeconds(){
+        Date intTime = new Date();
+        intTime.setTime(System.currentTimeMillis() - (45 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+
+        ticket.setInTime(intTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+
+        assertEquals(0, ticket.getPrice());
+    }
+
+    @Test
+    @DisplayName("Test pour vérifier le montant d'une place de parking pour un client en moto resté 45 secondes")
+    public void calculateFareBikeFortyFiveSeconds(){
+        Date intTime = new Date();
+        intTime.setTime(System.currentTimeMillis() - (45 * 1000));
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+
+        ticket.setInTime(intTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket);
+
+        assertEquals(0, ticket.getPrice());
+    }
 
 }

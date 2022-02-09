@@ -71,7 +71,7 @@ public class Ticket {
 
 
 
-    public void Applydiscount() {
+    public void applyDiscount() {
         price -= price*0.05;
         System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
     }

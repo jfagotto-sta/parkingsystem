@@ -84,4 +84,15 @@ public class ParkingDataBaseIT {
         assertNotEquals(parkingSpotDAO, parkingService.getNextParkingNumberIfAvailable());
     }
 
+    @Test
+    public void testParkingLotExitABike() throws InterruptedException {
+        when(inputReaderUtil.readSelection()).thenReturn(2);
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService.processIncomingVehicle();
+        Thread.sleep(1000);
+        parkingService.processExitingVehicle();
+        Ticket ticket = ticketDAO.getTicket("ABCDEF");
+        assertNotNull(ticket.getOutTime());
+        assertEquals(ticket.getPrice(), 0);
+    }
 }
